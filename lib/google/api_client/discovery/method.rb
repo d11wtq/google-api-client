@@ -196,7 +196,7 @@ module Google
         # encode all non-template parameters
         params = ""
         unless query_parameters.empty?
-          params = "?" + Addressable::URI.form_encode(query_parameters)
+          params = Addressable::URI.new(:query_values => query_parameters).to_s
         end
         # Normalization is necessary because of undesirable percent-escaping
         # during URI template expansion
