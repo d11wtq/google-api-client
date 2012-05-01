@@ -289,7 +289,7 @@ describe Google::APIClient do
       result = @client.execute(
         @prediction.training.insert,
         {},
-        MultiJson.dump({"id" => "bucket/object"}),
+        APIClient.dump_json({"id" => "bucket/object"}),
         {'Content-Type' => 'application/json'}
       )
       result.request.headers['Content-Type'].should == 'application/json'

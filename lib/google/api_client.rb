@@ -34,6 +34,16 @@ module Google
   ##
   # This class manages APIs communication.
   class APIClient
+    class << self
+      def load_json(str)
+        MultiJson.respond_to?(:dump) ? MultiJson.load(str) : MultiJson.decode(str)
+      end
+
+      def dump_json(json)
+        MultiJson.respond_to?(:dump) ? MultiJson.dump(json) : MultiJson.encode(json)
+      end
+    end
+
     ##
     # Creates a new Google API client.
     #
@@ -281,7 +291,7 @@ module Google
           "Expected String or StringIO, got #{discovery_document.class}."
       end
       @discovery_documents["#{api}:#{version}"] =
-        MultiJson.load(discovery_document)
+        APIClient.load_json(discovery_document)
     end
 
     ##
@@ -297,7 +307,7 @@ module Google
         )
         response = self.transmit(:request => request)
         if response.status >= 200 && response.status < 300
-          MultiJson.load(response.body)
+          APIClient.load_json(response.body)
         elsif response.status >= 400
           case response.status
           when 400...500
@@ -331,7 +341,7 @@ module Google
         )
         response = self.transmit(:request => request)
         if response.status >= 200 && response.status < 300
-          MultiJson.load(response.body)
+          APIClient.load_json(response.body)
         elsif response.status >= 400
           case response.status
           when 400...500
@@ -484,7 +494,7 @@ module Google
         response = self.transmit(:request => request)
         if response.status >= 200 && response.status < 300
           @certificates.merge!(
-            Hash[MultiJson.load(response.body).map do |key, cert|
+            Hash[APIClient.load_json(response.body).map do |key, cert|
               [key, OpenSSL::X509::Certificate.new(cert)]
             end]
           )
